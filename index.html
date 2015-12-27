@@ -32,9 +32,18 @@
 
     var flySpeed = 3;
 
+    // bullet stuffs
+    var bulletWidth = 2;
+    var bulletHeight = 5;
+
+    var bulletSpeed = 2;
+
     // user input
     var leftPressed = false;
     var rightPressed = false;
+    var spacePressed = false;
+
+    var bulletList = [];
 
     function drawShip() {
       ctx.beginPath();
@@ -46,6 +55,44 @@
       ctx.fillStyle = "#0095DD";
       ctx.fill();
       ctx.closePath();
+    }
+
+    function Bullet(x, y) {
+      this.pos = {
+        x: x,
+        y: y
+      }
+
+      this.setY = function (y) {
+        this.pos.y = y;
+      }
+    }
+
+    function shootBullet() {
+      var x = shipX+(shipWidth/2)-(bulletWidth/2);
+      var y = shipY-shipHeight-bulletHeight;
+      bulletList.push(new Bullet(x, y));
+    }
+
+    function drawBullets() {
+      var bulletsOnScreen = [];
+
+      bulletList.forEach(function (bullet) {
+        var newBulletY = bullet.pos.y-bulletSpeed;
+        if (newBulletY > bulletHeight) {
+          bulletsOnScreen.push(bullet);
+        }
+        bullet.setY(newBulletY);
+
+        ctx.beginPath();
+        ctx.rect(bullet.pos.x,bullet.pos.y,bulletWidth,bulletHeight);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        ctx.closePath();
+      });
+
+      // refresh list to remove items who've gone off screen
+      bulletList = bulletsOnScreen;
     }
 
     function draw() {
@@ -60,24 +107,39 @@
         shipX += flySpeed;
       }
 
+      if (spacePressed) {
+        shootBullet();
+      }
+
       drawShip();
+      drawBullets();
     }
 
+    var LEFT_KEY = 37;
+    var RIGHT_KEY = 39;
+    var SPACE_BAR = 32;
+
     function keyDownHandler(e) {
-      if(e.keyCode == 39) {
+      if(e.keyCode === RIGHT_KEY) {
         rightPressed = true;
       }
-      else if(e.keyCode == 37) {
+      else if(e.keyCode === LEFT_KEY) {
         leftPressed = true;
+      }
+      else if(e.keyCode === SPACE_BAR) {
+        spacePressed = true;
       }
     }
 
     function keyUpHandler(e) {
-      if(e.keyCode == 39) {
+      if(e.keyCode === RIGHT_KEY) {
         rightPressed = false;
       }
-      else if(e.keyCode == 37) {
+      else if(e.keyCode === LEFT_KEY) {
         leftPressed = false;
+      }
+      else if(e.keyCode === SPACE_BAR) {
+        spacePressed = false;
       }
     }
 
