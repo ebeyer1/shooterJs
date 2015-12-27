@@ -22,10 +22,22 @@ var flySpeed = 3;
 var bulletWidth = 2;
 var bulletHeight = 5;
 
-var bulletSpeed = 2;
+var bulletSpeed = -2;
 
 var canShootBullet = true;
 var delayForNextBullet = 500;
+
+// enemy input
+var enemyWidth = 60;
+var enemeyHeight = 25;
+
+var enemyXOffset = 50;
+var enemyYPosition = 50;
+var enemies = [
+  new Enemy(enemyXOffset, enemyYPosition),
+  new Enemy(canvas.width*1/3+enemyXOffset, enemyYPosition),
+  new Enemy(canvas.width*2/3+enemyXOffset, enemyYPosition)
+];
 
 // user input
 var leftPressed = false;
@@ -67,11 +79,27 @@ function drawBullets() {
   var bulletsOnScreen = [];
 
   bulletList.forEach(function (bullet) {
-    var newBulletY = bullet.pos.y-bulletSpeed;
-    if (newBulletY > bulletHeight) {
+    bullet.move(bulletSpeed);
+
+    if (bullet.pos.y > bulletHeight) {
       bulletsOnScreen.push(bullet);
     }
-    bullet.setY(newBulletY);
+
+    var tempEnemyList = [];
+    // can easily be optimized. Just get something working
+    enemies.forEach(function (enemy) {
+      if (bullet.pos.y <= enemy.pos.y + enemeyHeight &&
+          bullet.pos.x >= enemy.pos.x && bullet.pos.x <= enemy.pos.x + enemyWidth) {
+        // killed.
+        bulletsOnScreen.pop(); // remove bullet since it hit something
+      } else {
+        tempEnemyList.push(enemy);
+      }
+    });
+
+    if (enemies.length !== tempEnemyList.length) {
+      enemies = tempEnemyList;
+    }
 
     ctx.beginPath();
     ctx.rect(bullet.pos.x,bullet.pos.y,bulletWidth,bulletHeight);
@@ -82,6 +110,16 @@ function drawBullets() {
 
   // refresh list to remove items who've gone off screen
   bulletList = bulletsOnScreen;
+}
+
+function drawEnemies() {
+  enemies.forEach(function (enemy) {
+    ctx.beginPath();
+    ctx.rect(enemy.pos.x,enemy.pos.y,enemyWidth,enemeyHeight);
+    ctx.fillStyle = "green";
+    ctx.fill();
+    ctx.closePath();
+  });
 }
 
 function draw() {
@@ -101,6 +139,7 @@ function draw() {
   }
 
   drawShip();
+  drawEnemies();
   drawBullets();
 }
 
