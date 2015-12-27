@@ -38,6 +38,9 @@
 
     var bulletSpeed = 2;
 
+    var canShootBullet = true;
+    var delayForNextBullet = 500;
+
     // user input
     var leftPressed = false;
     var rightPressed = false;
@@ -68,10 +71,21 @@
       }
     }
 
+    function disableBullet() {
+      canShootBullet = false;
+    }
+
+    function enableBullet() {
+      canShootBullet = true;
+    };
+
     function shootBullet() {
       var x = shipX+(shipWidth/2)-(bulletWidth/2);
       var y = shipY-shipHeight-bulletHeight;
       bulletList.push(new Bullet(x, y));
+      disableBullet();
+
+      setTimeout(enableBullet, delayForNextBullet);
     }
 
     function drawBullets() {
@@ -107,7 +121,7 @@
         shipX += flySpeed;
       }
 
-      if (spacePressed) {
+      if (spacePressed && canShootBullet) {
         shootBullet();
       }
 
