@@ -1,3 +1,8 @@
+var DRAW_TIMER = 10;
+var LEFT_KEY = 37;
+var RIGHT_KEY = 39;
+var SPACE_BAR = 32;
+
 var canvas = document.getElementById("js-canvas");
 canvas.setAttribute('width', 480);
 canvas.setAttribute('height', 320);
@@ -39,17 +44,6 @@ function drawShip() {
   ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
-}
-
-function Bullet(x, y) {
-  this.pos = {
-    x: x,
-    y: y
-  }
-
-  this.setY = function (y) {
-    this.pos.y = y;
-  }
 }
 
 function disableBullet() {
@@ -110,10 +104,6 @@ function draw() {
   drawBullets();
 }
 
-var LEFT_KEY = 37;
-var RIGHT_KEY = 39;
-var SPACE_BAR = 32;
-
 function keyDownHandler(e) {
   if(e.keyCode === RIGHT_KEY) {
     rightPressed = true;
@@ -140,4 +130,4 @@ function keyUpHandler(e) {
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
-setInterval(draw, 10);
+setInterval(draw, DRAW_TIMER);
