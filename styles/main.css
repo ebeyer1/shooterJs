@@ -18,3 +18,8 @@ body {
   margin-top: 2rem;
   text-align: center;
 }
+
+.score {
+  width: 480px;
+  margin: 0 auto;
+}

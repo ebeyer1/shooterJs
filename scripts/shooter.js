@@ -9,6 +9,11 @@ canvas.setAttribute('height', 320);
 
 var ctx = canvas.getContext("2d");
 
+var scoreDiv = document.getElementById("js-score");
+
+// score
+var score = 0;
+
 // ship stuffs
 var shipHeight = 25;
 var shipWidth = 40;
@@ -33,10 +38,11 @@ var enemeyHeight = 25;
 
 var enemyXOffset = 50;
 var enemyYPosition = 50;
+var enemyWorth = 100;
 var enemies = [
-  new Enemy(enemyXOffset, enemyYPosition),
-  new Enemy(canvas.width*1/3+enemyXOffset, enemyYPosition),
-  new Enemy(canvas.width*2/3+enemyXOffset, enemyYPosition)
+  new Enemy(enemyXOffset, enemyYPosition, enemyWorth),
+  new Enemy(canvas.width*1/3+enemyXOffset, enemyYPosition, enemyWorth),
+  new Enemy(canvas.width*2/3+enemyXOffset, enemyYPosition, enemyWorth)
 ];
 
 // user input
@@ -92,6 +98,8 @@ function drawBullets() {
           bullet.pos.x >= enemy.pos.x && bullet.pos.x <= enemy.pos.x + enemyWidth) {
         // killed.
         bulletsOnScreen.pop(); // remove bullet since it hit something
+        score += enemy.worth;
+        scoreDiv.innerHTML = "Score: " + score;
       } else {
         tempEnemyList.push(enemy);
       }
