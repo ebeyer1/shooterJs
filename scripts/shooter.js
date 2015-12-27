@@ -107,6 +107,14 @@ function drawBullets() {
 
     if (enemies.length !== tempEnemyList.length) {
       enemies = tempEnemyList;
+
+      if (enemies.length === 0) {
+        // Game over. You win.
+        clearInterval(drawIntervalId);
+        clearCanvas();
+        drawShip();
+        alert("You win! Refresh to play again.");
+      }
     }
 
     ctx.beginPath();
@@ -130,8 +138,12 @@ function drawEnemies() {
   });
 }
 
-function draw() {
+function clearCanvas() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function draw() {
+  clearCanvas();
 
   // move ship pos
   if (leftPressed && shipX > 0) {
@@ -177,4 +189,4 @@ function keyUpHandler(e) {
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
-setInterval(draw, DRAW_TIMER);
+var drawIntervalId = setInterval(draw, DRAW_TIMER);
