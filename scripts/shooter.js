@@ -52,7 +52,7 @@ var delayForNextBullet = 500;
 
 // enemy input
 var enemyWidth = 60;
-var enemeyHeight = 25;
+var enemyHeight = 25;
 
 var enemyXOffset = 50;
 var enemyYPosition = 50;
@@ -144,7 +144,7 @@ function drawBullets() {
     var tempEnemyList = [];
     // can easily be optimized. Just get something working
     enemies.forEach(function (enemy) {
-      if (bullet.pos.y <= enemy.pos.y + enemeyHeight &&
+      if (bullet.pos.y <= enemy.pos.y + enemyHeight &&
           bullet.pos.x >= enemy.pos.x && bullet.pos.x <= enemy.pos.x + enemyWidth) {
         // killed.
         bulletsOnScreen.pop(); // remove bullet since it hit something
@@ -152,7 +152,7 @@ function drawBullets() {
         scoreDiv.innerHTML = "Score: " + score;
 
         // explode
-        explodeEnemy(enemy.pos.x + (enemyWidth/2), enemy.pos.y + (enemeyHeight/2));
+        explodeEnemy(enemy.pos.x + (enemyWidth/2), enemy.pos.y + (enemyHeight/2));
       } else {
         tempEnemyList.push(enemy);
       }
@@ -184,7 +184,36 @@ function drawBullets() {
 function drawEnemies() {
   enemies.forEach(function (enemy) {
     ctx.beginPath();
-    ctx.rect(enemy.pos.x,enemy.pos.y,enemyWidth,enemeyHeight);
+    var enemyWidthColumns = 7;
+    var enemyColumnWidth = enemyWidth / enemyWidthColumns;
+
+    // creating a curved winged ship enemy (|-|)
+    var sectionWidth = enemyColumnWidth * ((enemyWidthColumns-1)/2);
+    var sectionHeight = enemyHeight;
+    var startX = enemy.pos.x + sectionWidth;
+    var startY = enemy.pos.y;
+
+    // first curved section on the left
+    ctx.moveTo(startX, startY);
+    ctx.bezierCurveTo(startX - sectionWidth, startY, startX - sectionWidth, startY + sectionHeight, startX, startY + sectionHeight);
+
+    // middle section connecting curved bits
+    sectionHeight = enemyHeight / 3;
+    sectionWidth = enemyColumnWidth;
+    startY += sectionHeight;
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(startX + sectionWidth, startY);
+    ctx.lineTo(startX + sectionWidth, startY + sectionHeight);
+    ctx.lineTo(startX, startY + sectionHeight);
+
+    // last curved section on the right
+    startX += sectionWidth;
+    startY = enemy.pos.y;
+    sectionWidth = enemyColumnWidth * ((enemyWidthColumns-1)/2);
+    sectionHeight = enemyHeight;
+    ctx.moveTo(startX, startY);
+    ctx.bezierCurveTo(startX + sectionWidth, startY, startX + sectionWidth, startY + sectionHeight, startX, startY + sectionHeight);
+
     ctx.fillStyle = "green";
     ctx.fill();
     ctx.closePath();
