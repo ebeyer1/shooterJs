@@ -1,4 +1,5 @@
 function Particle() {
+  // default props
   this.scale = 1.0;
   this.x = 0;
   this.y = 0;
@@ -8,8 +9,41 @@ function Particle() {
   this.velocityY = 0;
   this.scaleSpeed = 0.5;
 
+  // methods
+  this.setPos = setPos;
+  this.setColor = setColor;
+  this.setVelocity = setVelocity;
+  this.setRadius = setRadius;
+  this.setScaleSpeed = setScaleSpeed;
+  this.shouldDraw = shouldDraw;
   this.update = update;
   this.draw = draw;
+
+  function setPos(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  function setColor(color) {
+    this.color = color;
+  }
+
+  function setVelocity(velocityX, velocityY) {
+    this.velocityX = velocityX;
+    this.velocityY = velocityY;
+  }
+
+  function setRadius(radius) {
+    this.radius = radius;
+  }
+
+  function setScaleSpeed(scaleSpeed) {
+      this.scaleSpeed = scaleSpeed;
+  }
+
+  function shouldDraw() {
+    return this.scale > 0;
+  }
 
   function update(ms) {
     // shrinking

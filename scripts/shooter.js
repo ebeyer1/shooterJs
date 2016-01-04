@@ -1,7 +1,25 @@
+// Game variables
+
 var DRAW_TIMER = 10;
 var LEFT_KEY = 37;
 var RIGHT_KEY = 39;
 var SPACE_BAR = 32;
+
+// particle variables
+
+var MIN_PARTICLE_SIZE = 6;
+var MAX_PARTICLE_SIZE = 18;
+var PARTICLE_COUNT = 12;
+var MIN_PARTICLE_SPEED = 60.0;
+var MAX_PARTICLE_SPEED = 180.00;
+var MIN_PARTICLE_SCALE_SPEED = 3.0;
+var MAX_PARTICLE_SCALE_SPEED = 4.8;
+
+var PARTICLE_ANGLE_ITERATION = Math.round(360/PARTICLE_COUNT);
+
+var PARTICLE_COLORS = ["red", "green"];
+
+// canvas
 
 var canvas = document.getElementById("js-canvas");
 canvas.setAttribute('width', 480);
@@ -45,6 +63,10 @@ var enemies = [
   new Enemy(canvas.width*2/3+enemyXOffset, enemyYPosition, enemyWorth)
 ];
 
+// explosion stuffs
+
+var particles = [];
+
 // user input
 var leftPressed = false;
 var rightPressed = false;
@@ -64,6 +86,10 @@ function drawShip() {
   ctx.closePath();
 }
 
+function randomFloat(min, max) {
+  return min + Math.random()*(max-min);
+}
+
 function disableBullet() {
   canShootBullet = false;
 }
@@ -79,6 +105,30 @@ function shootBullet() {
   disableBullet();
 
   setTimeout(enableBullet, delayForNextBullet);
+}
+
+function explodeEnemy(x, y) {
+  for (var angle = 0; angle < 360; angle += PARTICLE_ANGLE_ITERATION) {
+    var particle = new Particle();
+    particle.setPos(x,y);
+
+    var colorIndex = Math.round(randomFloat(0,PARTICLE_COLORS.length));
+    var color = PARTICLE_COLORS[colorIndex];
+    particle.setColor(color);
+
+    var radius = randomFloat(MIN_PARTICLE_SIZE, MAX_PARTICLE_SIZE);
+    particle.setRadius(radius);
+
+    var scaleSpeed = randomFloat(MIN_PARTICLE_SCALE_SPEED, MAX_PARTICLE_SCALE_SPEED);
+    particle.setScaleSpeed(scaleSpeed);
+
+    var speed = randomFloat(MIN_PARTICLE_SPEED, MAX_PARTICLE_SPEED);
+    var velocityX = speed * Math.cos(angle * Math.PI / 180.0);
+    var velocityY = speed * Math.sin(angle * Math.PI / 180.0);
+    particle.setVelocity(velocityX, velocityY);
+
+    particles.push(particle);
+  }
 }
 
 function drawBullets() {
@@ -100,6 +150,9 @@ function drawBullets() {
         bulletsOnScreen.pop(); // remove bullet since it hit something
         score += enemy.worth;
         scoreDiv.innerHTML = "Score: " + score;
+
+        // explode
+        explodeEnemy(enemy.pos.x + (enemyWidth/2), enemy.pos.y + (enemeyHeight/2));
       } else {
         tempEnemyList.push(enemy);
       }
@@ -138,6 +191,20 @@ function drawEnemies() {
   });
 }
 
+function drawExplosions() {
+  var newParticleList = [];
+
+  particles.forEach(function (particle) {
+    particle.update(DRAW_TIMER);
+    if (particle.shouldDraw()) {
+      particle.draw(ctx);
+      newParticleList.push(particle);
+    }
+  });
+
+  particles = newParticleList;
+}
+
 function clearCanvas() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
 }
@@ -160,6 +227,7 @@ function draw() {
 
   drawShip();
   drawEnemies();
+  drawExplosions(); // should be part of the enemy stuff...
   drawBullets();
 }
 
