@@ -101,7 +101,7 @@ function enableBullet() {
 function shootBullet() {
   var x = shipX+(SHIP_WIDTH/2)-(BULLET_WIDTH/2);
   var y = shipY-SHIP_HEIGHT-BULLET_HEIGHT;
-  bulletList.push(new Bullet(x, y));
+  bulletList.push(new Bullet(x, y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED));
   disableBullet();
 
   setTimeout(enableBullet, delayForNextBullet);
@@ -135,7 +135,7 @@ function drawBullets() {
   var bulletsOnScreen = [];
 
   bulletList.forEach(function (bullet) {
-    bullet.move(BULLET_SPEED);
+    bullet.update(DRAW_TIMER);
 
     if (bullet.pos.y > BULLET_HEIGHT) {
       bulletsOnScreen.push(bullet);
@@ -170,11 +170,7 @@ function drawBullets() {
       }
     }
 
-    ctx.beginPath();
-    ctx.rect(bullet.pos.x,bullet.pos.y,BULLET_WIDTH,BULLET_HEIGHT);
-    ctx.fillStyle = "red";
-    ctx.fill();
-    ctx.closePath();
+    bullet.draw(ctx);
   });
 
   // refresh list to remove items who've gone off screen
@@ -209,7 +205,7 @@ function drawEnemies() {
     // last curved section on the right
     startX += sectionWidth;
     startY = enemy.pos.y;
-    sectionWidth = enemyColumnWidth * ((ENEMY_WIDTHColumns-1)/2);
+    sectionWidth = enemyColumnWidth * ((enemyWidthColumns-1)/2);
     sectionHeight = ENEMY_HEIGHT;
     ctx.moveTo(startX, startY);
     ctx.bezierCurveTo(startX + sectionWidth, startY, startX + sectionWidth, startY + sectionHeight, startX, startY + sectionHeight);
