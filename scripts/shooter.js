@@ -33,26 +33,26 @@ var scoreDiv = document.getElementById("js-score");
 var score = 0;
 
 // ship stuffs
-var shipHeight = 25;
-var shipWidth = 40;
-var shipX = (canvas.width/2)-(shipWidth/2); // middle
+var SHIP_HEIGHT = 25;
+var SHIP_WIDTH = 40;
+var shipX = (canvas.width/2)-(SHIP_WIDTH/2); // middle
 var shipY = canvas.height; // bottom of screen
 var shipIndentOffset = 3;
 
 var flySpeed = 3;
 
 // bullet stuffs
-var bulletWidth = 2;
-var bulletHeight = 5;
+var BULLET_WIDTH = 2;
+var BULLET_HEIGHT = 5;
 
-var bulletSpeed = -2;
+var BULLET_SPEED = -2;
 
 var canShootBullet = true;
 var delayForNextBullet = 500;
 
 // enemy input
-var enemyWidth = 60;
-var enemyHeight = 25;
+var ENEMY_WIDTH = 60;
+var ENEMY_HEIGHT = 25;
 
 var enemyXOffset = 50;
 var enemyYPosition = 50;
@@ -77,10 +77,10 @@ var bulletList = [];
 function drawShip() {
   ctx.beginPath();
   ctx.moveTo(shipX,shipY);
-  ctx.lineTo(shipX+(shipWidth/4)+shipIndentOffset,shipY-(shipHeight/3));
-  ctx.lineTo(shipX+(shipWidth/2),shipY-shipHeight);
-  ctx.lineTo(shipX+(shipWidth*3/4)-shipIndentOffset,shipY-(shipHeight/3));
-  ctx.lineTo(shipX+shipWidth, shipY);
+  ctx.lineTo(shipX+(SHIP_WIDTH/4)+shipIndentOffset,shipY-(SHIP_HEIGHT/3));
+  ctx.lineTo(shipX+(SHIP_WIDTH/2),shipY-SHIP_HEIGHT);
+  ctx.lineTo(shipX+(SHIP_WIDTH*3/4)-shipIndentOffset,shipY-(SHIP_HEIGHT/3));
+  ctx.lineTo(shipX+SHIP_WIDTH, shipY);
   ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
@@ -99,8 +99,8 @@ function enableBullet() {
 };
 
 function shootBullet() {
-  var x = shipX+(shipWidth/2)-(bulletWidth/2);
-  var y = shipY-shipHeight-bulletHeight;
+  var x = shipX+(SHIP_WIDTH/2)-(BULLET_WIDTH/2);
+  var y = shipY-SHIP_HEIGHT-BULLET_HEIGHT;
   bulletList.push(new Bullet(x, y));
   disableBullet();
 
@@ -135,24 +135,24 @@ function drawBullets() {
   var bulletsOnScreen = [];
 
   bulletList.forEach(function (bullet) {
-    bullet.move(bulletSpeed);
+    bullet.move(BULLET_SPEED);
 
-    if (bullet.pos.y > bulletHeight) {
+    if (bullet.pos.y > BULLET_HEIGHT) {
       bulletsOnScreen.push(bullet);
     }
 
     var tempEnemyList = [];
     // can easily be optimized. Just get something working
     enemies.forEach(function (enemy) {
-      if (bullet.pos.y <= enemy.pos.y + enemyHeight &&
-          bullet.pos.x >= enemy.pos.x && bullet.pos.x <= enemy.pos.x + enemyWidth) {
+      if (bullet.pos.y <= enemy.pos.y + ENEMY_HEIGHT &&
+          bullet.pos.x >= enemy.pos.x && bullet.pos.x <= enemy.pos.x + ENEMY_WIDTH) {
         // killed.
         bulletsOnScreen.pop(); // remove bullet since it hit something
         score += enemy.worth;
         scoreDiv.innerHTML = "Score: " + score;
 
         // explode
-        explodeEnemy(enemy.pos.x + (enemyWidth/2), enemy.pos.y + (enemyHeight/2));
+        explodeEnemy(enemy.pos.x + (ENEMY_WIDTH/2), enemy.pos.y + (ENEMY_HEIGHT/2));
       } else {
         tempEnemyList.push(enemy);
       }
@@ -171,7 +171,7 @@ function drawBullets() {
     }
 
     ctx.beginPath();
-    ctx.rect(bullet.pos.x,bullet.pos.y,bulletWidth,bulletHeight);
+    ctx.rect(bullet.pos.x,bullet.pos.y,BULLET_WIDTH,BULLET_HEIGHT);
     ctx.fillStyle = "red";
     ctx.fill();
     ctx.closePath();
@@ -185,11 +185,11 @@ function drawEnemies() {
   enemies.forEach(function (enemy) {
     ctx.beginPath();
     var enemyWidthColumns = 7;
-    var enemyColumnWidth = enemyWidth / enemyWidthColumns;
+    var enemyColumnWidth = ENEMY_WIDTH / enemyWidthColumns;
 
     // creating a curved winged ship enemy (|-|)
     var sectionWidth = enemyColumnWidth * ((enemyWidthColumns-1)/2);
-    var sectionHeight = enemyHeight;
+    var sectionHeight = ENEMY_HEIGHT;
     var startX = enemy.pos.x + sectionWidth;
     var startY = enemy.pos.y;
 
@@ -198,7 +198,7 @@ function drawEnemies() {
     ctx.bezierCurveTo(startX - sectionWidth, startY, startX - sectionWidth, startY + sectionHeight, startX, startY + sectionHeight);
 
     // middle section connecting curved bits
-    sectionHeight = enemyHeight / 3;
+    sectionHeight = ENEMY_HEIGHT / 3;
     sectionWidth = enemyColumnWidth;
     startY += sectionHeight;
     ctx.moveTo(startX, startY);
@@ -209,8 +209,8 @@ function drawEnemies() {
     // last curved section on the right
     startX += sectionWidth;
     startY = enemy.pos.y;
-    sectionWidth = enemyColumnWidth * ((enemyWidthColumns-1)/2);
-    sectionHeight = enemyHeight;
+    sectionWidth = enemyColumnWidth * ((ENEMY_WIDTHColumns-1)/2);
+    sectionHeight = ENEMY_HEIGHT;
     ctx.moveTo(startX, startY);
     ctx.bezierCurveTo(startX + sectionWidth, startY, startX + sectionWidth, startY + sectionHeight, startX, startY + sectionHeight);
 
@@ -246,7 +246,7 @@ function draw() {
     shipX -= flySpeed;
   }
 
-  if (rightPressed && shipX < canvas.width-shipWidth) {
+  if (rightPressed && shipX < canvas.width-SHIP_WIDTH) {
     shipX += flySpeed;
   }
 
