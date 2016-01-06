@@ -58,9 +58,9 @@ var enemyXOffset = 50;
 var enemyYPosition = 50;
 var enemyWorth = 100;
 var enemies = [
-  new Enemy(enemyXOffset, enemyYPosition, enemyWorth),
-  new Enemy(canvas.width*1/3+enemyXOffset, enemyYPosition, enemyWorth),
-  new Enemy(canvas.width*2/3+enemyXOffset, enemyYPosition, enemyWorth)
+  new Enemy(enemyXOffset, enemyYPosition, ENEMY_WIDTH, ENEMY_HEIGHT, enemyWorth),
+  new Enemy(canvas.width*1/3+enemyXOffset, enemyYPosition, ENEMY_WIDTH, ENEMY_HEIGHT, enemyWorth),
+  new Enemy(canvas.width*2/3+enemyXOffset, enemyYPosition, ENEMY_WIDTH, ENEMY_HEIGHT, enemyWorth)
 ];
 
 // explosion stuffs
@@ -112,7 +112,7 @@ function explodeEnemy(x, y) {
     var particle = new Particle();
     particle.setPos(x,y);
 
-    var colorIndex = Math.round(randomFloat(0,PARTICLE_COLORS.length));
+    var colorIndex = Math.floor(randomFloat(0,PARTICLE_COLORS.length));
     var color = PARTICLE_COLORS[colorIndex];
     particle.setColor(color);
 
@@ -144,15 +144,15 @@ function drawBullets() {
     var tempEnemyList = [];
     // can easily be optimized. Just get something working
     enemies.forEach(function (enemy) {
-      if (bullet.pos.y <= enemy.pos.y + ENEMY_HEIGHT &&
-          bullet.pos.x >= enemy.pos.x && bullet.pos.x <= enemy.pos.x + ENEMY_WIDTH) {
+      if (bullet.pos.y <= enemy.pos.y + enemy.height &&
+          bullet.pos.x >= enemy.pos.x && bullet.pos.x <= enemy.pos.x + enemy.width) {
         // killed.
         bulletsOnScreen.pop(); // remove bullet since it hit something
         score += enemy.worth;
         scoreDiv.innerHTML = "Score: " + score;
 
         // explode
-        explodeEnemy(enemy.pos.x + (ENEMY_WIDTH/2), enemy.pos.y + (ENEMY_HEIGHT/2));
+        explodeEnemy(enemy.pos.x + (enemy.width/2), enemy.pos.y + (enemy.height/2));
       } else {
         tempEnemyList.push(enemy);
       }
@@ -179,40 +179,7 @@ function drawBullets() {
 
 function drawEnemies() {
   enemies.forEach(function (enemy) {
-    ctx.beginPath();
-    var enemyWidthColumns = 7;
-    var enemyColumnWidth = ENEMY_WIDTH / enemyWidthColumns;
-
-    // creating a curved winged ship enemy (|-|)
-    var sectionWidth = enemyColumnWidth * ((enemyWidthColumns-1)/2);
-    var sectionHeight = ENEMY_HEIGHT;
-    var startX = enemy.pos.x + sectionWidth;
-    var startY = enemy.pos.y;
-
-    // first curved section on the left
-    ctx.moveTo(startX, startY);
-    ctx.bezierCurveTo(startX - sectionWidth, startY, startX - sectionWidth, startY + sectionHeight, startX, startY + sectionHeight);
-
-    // middle section connecting curved bits
-    sectionHeight = ENEMY_HEIGHT / 3;
-    sectionWidth = enemyColumnWidth;
-    startY += sectionHeight;
-    ctx.moveTo(startX, startY);
-    ctx.lineTo(startX + sectionWidth, startY);
-    ctx.lineTo(startX + sectionWidth, startY + sectionHeight);
-    ctx.lineTo(startX, startY + sectionHeight);
-
-    // last curved section on the right
-    startX += sectionWidth;
-    startY = enemy.pos.y;
-    sectionWidth = enemyColumnWidth * ((enemyWidthColumns-1)/2);
-    sectionHeight = ENEMY_HEIGHT;
-    ctx.moveTo(startX, startY);
-    ctx.bezierCurveTo(startX + sectionWidth, startY, startX + sectionWidth, startY + sectionHeight, startX, startY + sectionHeight);
-
-    ctx.fillStyle = "green";
-    ctx.fill();
-    ctx.closePath();
+    enemy.draw(ctx);
   });
 }
 
