@@ -35,9 +35,7 @@ var score = 0;
 // ship stuffs
 var SHIP_HEIGHT = 25;
 var SHIP_WIDTH = 40;
-var shipX = (canvas.width/2)-(SHIP_WIDTH/2); // middle
-var shipY = canvas.height; // bottom of screen
-var shipIndentOffset = 3;
+var ship = new Ship((canvas.width/2)-(SHIP_WIDTH/2), canvas.height, SHIP_WIDTH, SHIP_HEIGHT);
 
 var flySpeed = 3;
 
@@ -75,15 +73,7 @@ var spacePressed = false;
 var bulletList = [];
 
 function drawShip() {
-  ctx.beginPath();
-  ctx.moveTo(shipX,shipY);
-  ctx.lineTo(shipX+(SHIP_WIDTH/4)+shipIndentOffset,shipY-(SHIP_HEIGHT/3));
-  ctx.lineTo(shipX+(SHIP_WIDTH/2),shipY-SHIP_HEIGHT);
-  ctx.lineTo(shipX+(SHIP_WIDTH*3/4)-shipIndentOffset,shipY-(SHIP_HEIGHT/3));
-  ctx.lineTo(shipX+SHIP_WIDTH, shipY);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
+  ship.draw(ctx);
 }
 
 function randomFloat(min, max) {
@@ -99,9 +89,10 @@ function enableBullet() {
 };
 
 function shootBullet() {
-  var x = shipX+(SHIP_WIDTH/2)-(BULLET_WIDTH/2);
-  var y = shipY-SHIP_HEIGHT-BULLET_HEIGHT;
-  bulletList.push(new Bullet(x, y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED));
+  var x = ship.pos.x+(ship.width/2)-(BULLET_WIDTH/2);
+  var y = ship.pos.y-ship.height-BULLET_HEIGHT;
+  var bullet = new Bullet(x, y, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED);
+  bulletList.push(bullet);
   disableBullet();
 
   setTimeout(enableBullet, delayForNextBullet);
@@ -205,12 +196,12 @@ function draw() {
   clearCanvas();
 
   // move ship pos
-  if (leftPressed && shipX > 0) {
-    shipX -= flySpeed;
+  if (leftPressed && ship.pos.x > 0) {
+    ship.pos.x -= flySpeed;
   }
 
-  if (rightPressed && shipX < canvas.width-SHIP_WIDTH) {
-    shipX += flySpeed;
+  if (rightPressed && ship.pos.x < canvas.width-ship.width) {
+    ship.pos.x += flySpeed;
   }
 
   if (spacePressed && canShootBullet) {
